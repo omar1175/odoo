@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+<template id="report_hms_patient_document">
+    <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="patient">
+            <t t-call="web.external_layout">
+                <div class="page">
+
+                    <style>
+                        .hms-report-header {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: flex-start;
+                            margin-bottom: 24px;
+                            border-bottom: 3px solid #1565C0;
+                            padding-bottom: 16px;
+                        }
+                        .hms-report-title {
+                            font-size: 28pt;
+                            font-weight: bold;
+                            color: #CC0000;
+                        }
+                        .hms-patient-photo {
+                            width: 130px;
+                            height: 130px;
+                            object-fit: cover;
+                            border-radius: 4px;
+                            border: 2px solid #1565C0;
+                        }
+                        .hms-photo-placeholder {
+                            width: 130px;
+                            height: 130px;
+                            border: 2px solid #1565C0;
+                            border-radius: 4px;
+                            background: #e8eaf6;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: #9e9e9e;
+                            font-size: 11pt;
+                        }
+                        .hms-info-section {
+                            display: flex;
+                            justify-content: space-between;
+                            margin-bottom: 30px;
+                        }
+                        .hms-info-col {
+                            width: 48%;
+                        }
+                        .hms-info-col p {
+                            font-size: 12pt;
+                            margin: 6px 0;
+                        }
+                        .hms-info-col p strong {
+                            font-weight: bold;
+                        }
+                        .hms-log-title {
+                            text-align: center;
+                            font-size: 16pt;
+                            font-weight: bold;
+                            color: #CC0000;
+                            margin-bottom: 8px;
+                        }
+                        .hms-log-table {
+                            width: 100%;
+                            border-collapse: collapse;
+                        }
+                        .hms-log-table thead tr {
+                            background-color: #1565C0;
+                            color: #ffffff;
+                        }
+                        .hms-log-table thead th {
+                            padding: 10px 14px;
+                            font-size: 12pt;
+                            font-weight: bold;
+                            text-align: left;
+                        }
+                        .hms-log-table tbody tr:nth-child(odd) {
+                            background-color: #dce8fb;
+                        }
+                        .hms-log-table tbody tr:nth-child(even) {
+                            background-color: #eef4ff;
+                        }
+                        .hms-log-table tbody td {
+                            padding: 9px 14px;
+                            font-size: 11pt;
+                        }
+                    </style>
+
+                    <!-- ── Header: title + photo ── -->
+                    <div class="hms-report-header">
+                        <div class="hms-report-title">Patient Status Report</div>
+                        <div>
+                            <t t-if="patient.image">
+                                <img t-att-src="'data:image/png;base64,' + patient.image.decode('utf-8')"
+                                     class="hms-patient-photo"
+                                     alt="Patient Photo"/>
+                            </t>
+                            <t t-else="">
+                                <div class="hms-photo-placeholder">No Photo</div>
+                            </t>
+                        </div>
+                    </div>
+
+                    <!-- ── Two-column info ── -->
+                    <div class="hms-info-section">
+                        <!-- Left column -->
+                        <div class="hms-info-col">
+                            <p>
+                                <strong>Name:</strong>
+                                <t t-out="patient.first_name"/> <t t-out="patient.last_name"/>
+                            </p>
+                            <p>
+                                <strong>Age:</strong>
+                                <t t-out="patient.age"/>
+                            </p>
+                            <p>
+                                <strong>Department:</strong>
+                                <t t-if="patient.department_id">
+                                    <t t-out="patient.department_id.name"/>
+                                </t>
+                                <t t-else="">—</t>
+                            </p>
+                            <p>
+                                <strong>Doctors:</strong>
+                                <t t-if="patient.doctor_ids">
+                                    <t t-out="', '.join([d.first_name + ' ' + d.last_name for d in patient.doctor_ids])"/>
+                                </t>
+                                <t t-else="">—</t>
+                            </p>
+                        </div>
+
+                        <!-- Right column -->
+                        <div class="hms-info-col">
+                            <p>
+                                <strong>Birth Date:</strong>
+                                <t t-if="patient.birth_date">
+                                    <t t-out="patient.birth_date.strftime('%d/%m/%Y')"/>
+                                </t>
+                                <t t-else="">—</t>
+                            </p>
+                            <p>
+                                <strong>PCR:</strong>
+                                <t t-out="patient.cr_ratio if patient.pcr else 'N/A'"/>
+                            </p>
+                            <p>
+                                <strong>Blood Type:</strong>
+                                <t t-out="dict(patient._fields['blood_type'].selection).get(patient.blood_type, '—')"/>
+                            </p>
+                            <p>
+                                <strong>Email:</strong>
+                                <t t-out="patient.email or '—'"/>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- ── Log History ── -->
+                    <div class="hms-log-title">Log History</div>
+                    <table class="hms-log-table">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Date</th>
+                                <th>Info</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-if="patient.log_ids">
+                                <t t-foreach="patient.log_ids" t-as="log">
+                                    <tr>
+                                        <td><t t-out="log.created_by.name or '—'"/></td>
+                                        <td><t t-out="log.date.strftime('%d/%m/%Y %H:%M') if log.date else '—'"/></td>
+                                        <td><t t-out="log.description or '—'"/></td>
+                                    </tr>
+                                </t>
+                            </t>
+                            <t t-else="">
+                                <tr>
+                                    <td colspan="3" style="text-align:center; color:#888;">
+                                        No log entries yet.
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+
+                </div>
+            </t>
+        </t>
+    </t>
+</template>
+</odoo>

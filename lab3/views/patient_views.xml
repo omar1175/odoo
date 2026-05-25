@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- List View -->
+    <record id="view_hms_patient_list" model="ir.ui.view">
+        <field name="name">hms.patient.list</field>
+        <field name="model">hms.patient</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="first_name"/>
+                <field name="last_name"/>
+                <field name="email"/>
+                <field name="age"/>
+                <field name="blood_type"/>
+                <field name="pcr"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_hms_patient_form" model="ir.ui.view">
+        <field name="name">hms.patient.form</field>
+        <field name="model">hms.patient</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="%(action_undetermined)d"
+                            string="Undetermined"
+                            type="object"
+                            invisible="state == 'undetermined'"
+                            class="oe_highlight"/>
+                    <button name="action_set_good"
+                            string="Good"
+                            type="object"
+                            invisible="state == 'good'"
+                            class="oe_highlight"/>
+                    <button name="action_set_fair"
+                            string="Fair"
+                            type="object"
+                            invisible="state == 'fair'"
+                            class="oe_highlight"/>
+                    <button name="action_set_serious"
+                            string="Serious"
+                            type="object"
+                            invisible="state == 'serious'"
+                            class="oe_highlight"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="undetermined,good,fair,serious"/>
+                </header>
+                <sheet>
+
+                    <group>
+                        <field name="image" widget="image"/>
+                    </group>
+
+                    <group string="Personal Information">
+                        <group>
+                            <field name="first_name"/>
+                            <field name="last_name"/>
+                            <field name="email"/>
+                            <field name="birth_date"/>
+                            <field name="age" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="blood_type"/>
+                            <field name="pcr"/>
+                            <field name="cr_ratio"/>
+                            <field name="address"/>
+                        </group>
+                    </group>
+
+                    <group string="Department">
+                        <field name="department_id"/>
+                        <field name="department_capacity" readonly="1"/>
+                    </group>
+
+                    <notebook>
+                        <page string="Medical History">
+                            <field name="history"/>
+                        </page>
+
+                        <page string="Doctors">
+                            <field name="doctor_ids">
+                                <list>
+                                    <field name="first_name"/>
+                                    <field name="last_name"/>
+                                </list>
+                            </field>
+                        </page>
+
+                        <page string="State Logs">
+                            <field name="log_ids">
+                                <list editable="bottom">
+                                    <field name="date"/>
+                                    <field name="created_by"/>
+                                    <field name="description"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="hms_patient_action" model="ir.actions.act_window">
+        <field name="name">Patients</field>
+        <field name="res_model">hms.patient</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Main Menu -->
+    <menuitem id="hms_root_menu" name="HMS"/>
+
+    <!-- Patients Menu -->
+    <menuitem id="hms_patient_menu"
+              name="Patients"
+              parent="hms_root_menu"
+              action="hms_patient_action"/>
+
+</odoo>

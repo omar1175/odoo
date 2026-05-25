@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <!-- HMS Module Category -->
+        <record id="module_hms_category" model="ir.module.category">
+            <field name="name">Hospital Management System</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <!-- HMS User Group -->
+        <record id="group_hms_user" model="res.groups">
+            <field name="name">User</field>
+            <field name="category_id" ref="module_hms_category"/>
+            <field name="comment">
+                HMS User: can create/read/update own patients,
+                read-only access to departments and doctors.
+            </field>
+        </record>
+
+        <!-- HMS Manager Group (implies User) -->
+        <record id="group_hms_manager" model="res.groups">
+            <field name="name">Manager</field>
+            <field name="category_id" ref="module_hms_category"/>
+            <field name="implied_ids" eval="[(4, ref('group_hms_user'))]"/>
+            <field name="comment">
+                HMS Manager: full CRUD on patients, departments, and doctors.
+            </field>
+        </record>
+
+    </data>
+</odoo>

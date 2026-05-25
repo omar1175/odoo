@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!--
+        Inherit the standard res.partner form view to:
+        1. Add "Related Patient" inside the Misc group of the Sales & Purchase tab
+        2. Make Tax ID (vat) visually required
+    -->
+    <record id="view_partner_form_hms_inherit" model="ir.ui.view">
+        <field name="name">res.partner.form.hms.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Make Tax ID mandatory (red star) -->
+            <field name="vat" position="attributes">
+                <attribute name="required">1</attribute>
+            </field>
+
+            <!-- Add related_patient_id inside the "Misc" group
+                 within the Sales &amp; Purchase tab.
+                 We anchor after the "website" field which lives in Misc. -->
+            <xpath expr="//page[@name='sale_purchase']//group[@name='misc']"
+                   position="inside">
+                <field name="related_patient_id"
+                       string="Related Patient"/>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!--
+        Inherit the standard res.partner list view to show the website column.
+    -->
+    <record id="view_partner_list_hms_inherit" model="ir.ui.view">
+        <field name="name">res.partner.list.hms.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_res_partner_list"/>
+        <field name="arch" type="xml">
+            <!-- Append website after the last field in the list -->
+            <xpath expr="//list" position="inside">
+                <field name="website" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
